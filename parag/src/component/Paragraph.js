@@ -1,5 +1,5 @@
 const Paragraph = (props) => {
-    //destructuring
+    //Destructuring pour utiliser les propriétés de l'objet
     const {title,content,displayContent} = props.paragraph
     return (
         <section className="container mt-5">
