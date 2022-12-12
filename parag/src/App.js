@@ -34,6 +34,7 @@ class App extends Component{
   render(){
     return (
       <div className="App container mt-4">
+        <h1 className='mb-4'>Execrice Paragraphe</h1>
         <FormAddParagraph handleSubmitAddParagraph = {this.handleSubmitAddParagraph}/>
         {this.state.paragraphes.map((paragraph, index)=> (
           <Paragraph 

@@ -12,7 +12,6 @@ const FormAddParagraph = (props) => {
           <input 
           onClick={(e)=>{
             e.preventDefault();
-            console.log('hello');
             const title = document.querySelector('#title').value;
             const content = document.querySelector('#content').value;
             props.handleSubmitAddParagraph(title,content);
