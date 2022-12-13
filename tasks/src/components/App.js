@@ -64,10 +64,10 @@ function App() {
   };
 
   /**
-   * Ajout d'une tâche dans le state et sur le serveur
+   * Ajout d'une tâche dans le nouveau state et sur le serveur
    * @param {string} newLabel 
    * @param {string} newDescription 
-   * @param {string} newEnded 
+   * @param {timestamp} newEnded 
    */
   const handleSubmitAddTask = async(newLabel,newDescription,newEnded) => {
     const newTask = {label:newLabel, description:newDescription, ended:newEnded}
@@ -79,6 +79,7 @@ function App() {
   };
 
     /**
+     * Suppression de la tâche dans le nouveau state et sur le serveur
    * Gère le click sur le bouton supprimer
    * Utilisation de la méthode filter : si l'index de la tâche cliquée correspond à l'index de la tâche, cette dernière ne passe pas le filtre
    * Appel du mutateur de l'état tasks "setTasks"
