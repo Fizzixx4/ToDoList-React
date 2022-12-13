@@ -1,6 +1,7 @@
 import Coopernet from "./../services/Coopernet";
 import { useState, useEffect } from "react";
 import Task from "./Task";
+import FormAddTask from "./FormAddTask";
 
 const initial_value = [];
 function App() {
@@ -15,6 +16,7 @@ function App() {
     // Modification du state tasks
     setTasks(server_tasks);
   };
+
   // Equivalent du componentDidMount si le deuxième paramètre de useEffect est []
   useEffect(() => {
     const testLocalStorageToken = async () => {
@@ -53,27 +55,44 @@ function App() {
    * Appel du mutateur de l'état tasks "setTasks"
    * @param {Number} index
    */
-  const handleClickDeleteTask = (index) => {
+  const handleClickDeleteTask = (id) => {
     console.log(`Dans handleClickDeleteTask`);
-
     // Teste si l'index de la tâche est bien différent
     // de l'index de la tâche qui contient le bouton supprimer
     // sur lequel l'internaute a cliqué
-    setTasks(tasks.filter((task, i) => i !== index));
+    setTasks(tasks.filter((task) => task.id !== id));
   };
-  const handleClickValidateTask = (index) => {
+
+  /**
+   * Gère le click sur le bouton Valider/Invalider pour barrer la tâche
+   */
+  const handleClickValidateTask = (id) => {
     console.log(`Dans handleClickValidateTask`);
     setTasks(
-      tasks.map((task, i) => {
-        if (i === index) task.isValidate = !task.isValidate;
+      tasks.map((task) => {
+        if (task.id === id) task.isValidate = !task.isValidate;
         return task;
       })
     );
   };
+
+
   return (
     <div className="App container">
       <h1>Liste des tâches</h1>
-      {tasks.map((task, index) => (
+      <FormAddTask/>
+      <h2>Tâches En cours</h2>
+      {tasks.filter(task => !task.isValidate).map((task, index) => (
+        <Task
+          task={task}
+          key={task.id}
+          handleClickDeleteTask={handleClickDeleteTask}
+          handleClickValidateTask={handleClickValidateTask}
+          index={index}
+        />
+      ))}
+      <h2>Tâches Terminées</h2>
+      {tasks.filter(task => task.isValidate).map((task, index) => (
         <Task
           task={task}
           key={task.id}

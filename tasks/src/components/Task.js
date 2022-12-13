@@ -1,6 +1,6 @@
 const Task = (props) => {
   return (
-    <section className="d-flex justify-content-between">
+    <section className="d-flex justify-content-between border p-3 m-3">
       <h2
         className={props.task.isValidate ? "text-decoration-line-through" : ""}
       >
@@ -9,15 +9,18 @@ const Task = (props) => {
       <div>
         <button
           onClick={() => {
-            props.handleClickValidateTask(props.index);
+            props.handleClickValidateTask(props.task.id);
           }}
           className="btn btn-success me-3"
         >
-          Valider
+          {props.task.isValidate ? "Invalider" : "Valider"}
+        </button>
+        <button className="btn btn-primary me-3">
+          Mettre à jour
         </button>
         <button
           onClick={() => {
-            props.handleClickDeleteTask(props.index);
+            props.handleClickDeleteTask(props.task.id);
           }}
           className="btn btn-danger"
         >
