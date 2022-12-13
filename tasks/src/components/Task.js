@@ -1,6 +1,4 @@
 const Task = (props) => {
-  const date = new Date(props.task.created*1000)
-  console.log(date);
   return (
     <section className="d-flex justify-content-between border p-3 m-3">
       <h2

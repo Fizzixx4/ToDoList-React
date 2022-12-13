@@ -57,7 +57,10 @@ function App() {
     console.log(`Dans handleClickValidateTask`);
     setTasks(
       tasks.map((task) => {
-        if (task.id === id) task.isValidate = !task.isValidate;
+        if (task.id === id){
+          task.isValidate = !task.isValidate;
+          Coopernet.updateTask(task,tasks.length);
+        }
         return task;
       })
     );
