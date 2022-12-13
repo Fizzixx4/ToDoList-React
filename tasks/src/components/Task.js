@@ -1,4 +1,6 @@
 const Task = (props) => {
+  const date = new Date(props.task.created*1000)
+  console.log(date);
   return (
     <section className="d-flex justify-content-between border p-3 m-3">
       <h2
@@ -6,6 +8,9 @@ const Task = (props) => {
       >
         {props.task.label}
       </h2>
+      <p>{props.task.description}</p>
+      {/* <p>{props.date}</p> */}
+      <p>{props.task.ended}</p>
       <div>
         <button
           onClick={() => {
