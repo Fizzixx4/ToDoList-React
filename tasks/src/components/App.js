@@ -8,7 +8,8 @@ function App() {
   // Déclare une nouvelle variable d'état, que l'on va appeler « tasks »
   // useState renvoie un tableau. Le premier élément de ce dernier est un état et le deuxième élément est une référence vers la fonction qui permet de modifier cet état.
   const [tasks, setTasks] = useState(initial_value);
-  const [displayForm, setDisplayForm] = useState(false);
+  const [displayForm, setDisplayForm] = useState({type : 'none', taskIndex : -1});
+
   const fetchTask = async () => {
     // Récupération des tâches :
     const server_tasks = await Coopernet.getTasks();
@@ -73,7 +74,7 @@ function App() {
    * @param {string} newDescription 
    * @param {timestamp} newEnded 
    */
-  const handleSubmitAddTask = async(newLabel,newDescription,newEnded) => {
+  const handleSubmitAddTask = async (newLabel,newDescription,newEnded) => {
     console.log('handleSubmitAddTask')
     const newTask = {label:newLabel, description:newDescription, ended:newEnded, isValidate:0}
     const recupData = await Coopernet.addTask(newTask, tasks.length);
@@ -100,20 +101,35 @@ function App() {
       Coopernet.deleteTask(id);
     };
 
+    /**
+     * 
+     */
     const handleClickUpdateTask = (id) => {
-      console.log('handleClickUpdateTask');
-      setDisplayForm(!displayForm);
+      console.log('dans handleClickUpdateTask')
+      const taskIndex = tasks.findIndex(task => {return task.id === id});
+      console.log('task.index :', taskIndex);
+      setDisplayForm({type: 'update', taskIndex:taskIndex});
     }
+
+
+   // const updateCurrentTask()
 
   return (
     <div className="App container">
       <h1>Liste des tâches</h1>
-      {!displayForm && <button onClick={() => setDisplayForm(!displayForm)}
+      {displayForm.type === 'none' && <button onClick={() => setDisplayForm({type:'add'})}
       className="btn btn-primary">Ajouter une tâche</button>}
-      {displayForm && <FormTask displayForm={displayForm}
+      {displayForm.type === 'add' && <FormTask displayForm={displayForm}
         setDisplayForm={setDisplayForm}
         handleSubmitAddTask={handleSubmitAddTask}
       />}
+      {displayForm.type === 'update' && <FormTask 
+      displayForm={displayForm}
+      setDisplayForm={setDisplayForm}
+      handleClickUpdateTask={handleClickUpdateTask}
+      task={tasks[displayForm.taskIndex]}
+    />}
+      
       <h2>Tâches En cours</h2>
       {tasks.filter(task => parseInt(task.isValidate) !== 1).map((task, index) => (
         <Task
@@ -122,7 +138,7 @@ function App() {
           handleClickDeleteTask={handleClickDeleteTask}
           handleClickUpdateTask={handleClickUpdateTask}
           handleClickValidateTask={handleClickValidateTask}
-          index={index}
+          index={index}//!\\
         />
       ))}
       <h2>Tâches Terminées</h2>
@@ -133,7 +149,7 @@ function App() {
           handleClickDeleteTask={handleClickDeleteTask}
           handleClickUpdateTask={handleClickUpdateTask}
           handleClickValidateTask={handleClickValidateTask}
-          index={index}
+          index={index}//!\\
         />
       ))}
     </div>

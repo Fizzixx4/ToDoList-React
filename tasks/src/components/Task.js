@@ -18,18 +18,17 @@ const Task = (props) => {
           {parseInt(props.task.isValidate) ? "Invalider" : "Valider"}
         </button>
         <button 
-        onClick={() => {
-          props.handleClickUpdateTask(props.task.id);
-        }}
-        className="btn btn-primary me-3">
+          onClick={() => {
+            props.handleClickUpdateTask(props.task.id);
+          }}
+          className="btn btn-primary me-3">
           Mettre à jour
         </button>
         <button
           onClick={() => {
             props.handleClickDeleteTask(props.task.id);
           }}
-          className="btn btn-danger"
-        >
+          className="btn btn-danger">
           Supprimer
         </button>
       </div>
