@@ -38,11 +38,10 @@ const FormTask = (props) => {
           id="description"
           onChange={() => {}}
           value={props.task.description}
-          required
         />
       );
     } else {
-      return <input type="text" id="description" required />;
+      return <input type="text" id="description"/>;
     }
   };
 
@@ -55,11 +54,10 @@ const FormTask = (props) => {
           id="ended"
           onChange={() => {}}
           value={props.task.ended}
-          required
         />
       );
     } else {
-      return <input type="date" id="ended" required />;
+      return <input type="date" id="ended"/>;
     }
   };
 
@@ -70,7 +68,8 @@ const FormTask = (props) => {
         const label = document.querySelector("#label").value;
         const description = document.querySelector("#description").value;
         const ended = document.querySelector("#ended").value;
-        props.handleSubmitAddTask(label, description, ended);
+        {props.displayForm.type === "add" && props.handleSubmitAddTask(label, description, ended)};
+        {props.displayForm.type === "update" && props.updateTaskSelected()};
       }}
       className="d-flex flex-column align-items-center my-4 w-100"
     >

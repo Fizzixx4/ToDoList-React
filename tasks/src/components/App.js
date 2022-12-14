@@ -111,6 +111,10 @@ function App() {
       setDisplayForm({type: 'update', taskIndex:taskIndex});
     }
 
+    const updateTaskSelected = () => {
+      console.log('updateTaskSelected');
+    };
+
 
    // const updateCurrentTask()
 
@@ -131,6 +135,7 @@ function App() {
       setDisplayForm={setDisplayForm}
       handleClickUpdateTask={handleClickUpdateTask}
       task={tasks[displayForm.taskIndex]}
+      updateTaskSelected = {updateTaskSelected}
     />}
       
       <h2 className="my-3">Tâches En cours</h2>
