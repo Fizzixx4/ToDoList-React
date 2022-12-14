@@ -1,7 +1,7 @@
 import Coopernet from "./../services/Coopernet";
 import { useState, useEffect } from "react";
 import Task from "./Task";
-import FormAddTask from "./FormAddTask";
+import FormTask from "./FormTask";
 
 const initial_value = [];
 function App() {
@@ -58,7 +58,8 @@ function App() {
     setTasks(
       tasks.map((task) => {
         if (task.id === id){
-          task.isValidate = !task.isValidate;
+          //On fait un +!+ car on reçoit un string et qu'on veut le mettre en booléen numérique
+          task.isValidate = +!+task.isValidate;
           Coopernet.updateTask(task,tasks.length);
         }
         return task;
@@ -73,11 +74,13 @@ function App() {
    * @param {timestamp} newEnded 
    */
   const handleSubmitAddTask = async(newLabel,newDescription,newEnded) => {
-    const newTask = {label:newLabel, description:newDescription, ended:newEnded}
+    console.log('handleSubmitAddTask')
+    const newTask = {label:newLabel, description:newDescription, ended:newEnded, isValidate:0}
     const recupData = await Coopernet.addTask(newTask, tasks.length);
     newTask.id = recupData.id;
     newTask.order = tasks.length;
     newTask.created = recupData.created;
+    newTask.isValidate = 0;
     setTasks([...tasks, newTask]);
   };
 
@@ -97,31 +100,38 @@ function App() {
       Coopernet.deleteTask(id);
     };
 
+    const handleClickUpdateTask = (id) => {
+      console.log('handleClickUpdateTask');
+      setDisplayForm(!displayForm);
+    }
+
   return (
     <div className="App container">
       <h1>Liste des tâches</h1>
       {!displayForm && <button onClick={() => setDisplayForm(!displayForm)}
       className="btn btn-primary">Ajouter une tâche</button>}
-      {displayForm && <FormAddTask displayForm={displayForm}
+      {displayForm && <FormTask displayForm={displayForm}
         setDisplayForm={setDisplayForm}
         handleSubmitAddTask={handleSubmitAddTask}
       />}
       <h2>Tâches En cours</h2>
-      {tasks.filter(task => !task.isValidate).map((task, index) => (
+      {tasks.filter(task => parseInt(task.isValidate) !== 1).map((task, index) => (
         <Task
           task={task}
           key={task.id}
           handleClickDeleteTask={handleClickDeleteTask}
+          handleClickUpdateTask={handleClickUpdateTask}
           handleClickValidateTask={handleClickValidateTask}
           index={index}
         />
       ))}
       <h2>Tâches Terminées</h2>
-      {tasks.filter(task => task.isValidate).map((task, index) => (
+      {tasks.filter(task => parseInt(task.isValidate) === 1).map((task, index) => (
         <Task
           task={task}
           key={task.id}
           handleClickDeleteTask={handleClickDeleteTask}
+          handleClickUpdateTask={handleClickUpdateTask}
           handleClickValidateTask={handleClickValidateTask}
           index={index}
         />

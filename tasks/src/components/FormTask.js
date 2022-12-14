@@ -1,4 +1,4 @@
-const FormAddTask = (props) => {
+const FormTask = (props) => {
     return (
         <form
         onSubmit={(event) => {
@@ -11,7 +11,7 @@ const FormAddTask = (props) => {
         className="d-flex flex-column align-items-center my-4 w-100">
             <div className="my-2 d-flex">
                 <label className="me-3" htmlFor="label">Label</label>
-                <input type="text" id="label"/>
+                <input type="text" id="label" required/>
             </div>
             <div className="my-2 d-flex">
                 <label className="me-3" htmlFor="description">Description</label>
@@ -31,4 +31,4 @@ const FormAddTask = (props) => {
     );
 }
 
-export default FormAddTask;
+export default FormTask;
