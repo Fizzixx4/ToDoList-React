@@ -116,9 +116,12 @@ function App() {
 
   return (
     <div className="App container">
-      <h1>Liste des tâches</h1>
+      <div className="d-flex justify-content-between my-3">
+        <h1>Liste des tâches</h1>
+        <button className="btn btn-secondary">Se déconnecter</button>
+    </div>
       {displayForm.type === 'none' && <button onClick={() => setDisplayForm({type:'add'})}
-      className="btn btn-primary">Ajouter une tâche</button>}
+      className="btn btn-primary fixed">Ajouter une tâche</button>}
       {displayForm.type === 'add' && <FormTask displayForm={displayForm}
         setDisplayForm={setDisplayForm}
         handleSubmitAddTask={handleSubmitAddTask}
@@ -130,7 +133,7 @@ function App() {
       task={tasks[displayForm.taskIndex]}
     />}
       
-      <h2>Tâches En cours</h2>
+      <h2 className="my-3">Tâches En cours</h2>
       {tasks.filter(task => parseInt(task.isValidate) !== 1).map((task, index) => (
         <Task
           task={task}
@@ -141,7 +144,7 @@ function App() {
           index={index}//!\\
         />
       ))}
-      <h2>Tâches Terminées</h2>
+      <h2 className="my-3">Tâches Terminées</h2>
       {tasks.filter(task => parseInt(task.isValidate) === 1).map((task, index) => (
         <Task
           task={task}
