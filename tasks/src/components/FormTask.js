@@ -1,4 +1,6 @@
 const FormTask = (props) => {
+
+    //Affichage du titre de la tâche dans le formulaire en contexte update
     const getInputTitle = () => {
         if(props.displayForm.type === 'update'){
             return (
@@ -13,6 +15,40 @@ const FormTask = (props) => {
             )
         }
     }
+
+    //Affichage de la description de la tâche dans le formulaire en contexte update
+    const getInputDescription = () => {
+        if(props.displayForm.type === 'update'){
+            return (
+                <input type="text" id="description" onChange={()=>{
+
+                }} value={props.task.description} required/>
+            )
+        }
+        else{
+            return(
+                <input type="text" id="description" required/>
+            )
+        }
+    }
+
+    //Affichage de la date de fin de la tâche dans le formulaire en contexte update
+    const getInputDate = () => {
+        if(props.displayForm.type === 'update'){
+            return (
+                <input type="date" id="ended" onChange={()=>{
+
+                }} value={props.task.ended} required/>
+            )
+        }
+        else{
+            return(
+                <input type="date" id="ended" required/>
+            )
+        }
+    }
+
+
     return (
         <form
         onSubmit={(event) => {
@@ -29,11 +65,11 @@ const FormTask = (props) => {
             </div>
             <div className="my-2 d-flex">
                 <label className="me-3" htmlFor="description">Description</label>
-                <input type="text" id="description"/>
+                {getInputDescription()}
             </div>
             <div className="my-2 d-flex">
                 <label className="me-3" htmlFor="ended">Date de fin de tâche</label>
-                <input type="date" id="ended"/>
+                {getInputDate()}
             </div>
             {props.displayForm.type ==='add' && <input className="btn btn-primary" type="submit" value="Ajouter une tâche"/>}
             {props.displayForm.type ==='update' && <input className="btn btn-primary" type="submit" value="Mettre à jour"/>}
