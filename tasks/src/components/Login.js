@@ -1,13 +1,11 @@
-import Coopernet from "../services/Coopernet";
 const Login = (props) => {
     return (
         <form 
-        onSubmit={async ()=>{
-            props.signOut();
-            const login = document.querySelector('#login');
-            const pwd = document.querySelector('#pwd');
+        onSubmit={async (e)=>{
+            e.preventDefault();
+            const login = await document.querySelector('#login').value;
+            const pwd = await document.querySelector('#pwd').value;
             props.signIn(login,pwd);
-            //await Coopernet.setOAuthToken();
         }}
         className="container d-flex justify-content-center">
         <div className="d-flex flex-column w-25 my-5">

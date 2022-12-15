@@ -5,12 +5,13 @@ import FormTask from "./FormTask";
 import Login from "./Login";
 
 const initial_value = [];
+
 function App() {
   // Déclare une nouvelle variable d'état, que l'on va appeler « tasks »
   // useState renvoie un tableau. Le premier élément de ce dernier est un état et le deuxième élément est une référence vers la fonction qui permet de modifier cet état.
   const [tasks, setTasks] = useState(initial_value);
   const [displayForm, setDisplayForm] = useState({type : 'none', taskIndex : -1});
-  const [session, setSession] = useState({user : '', pwd : '', isConnected : false});
+  const [isConnected, setIsConnected] = useState(false);
 
   const fetchTask = async () => {
     // Récupération des tâches :
@@ -29,14 +30,15 @@ function App() {
           console.log(
             `Je suis dans le cas où mon local storage me permet de me connecter`
           );
+          setIsConnected(true);
           await fetchTask();
         } else {
           // Je modifie le login et le mot de passe
           // Il faudra faire en sorte d'appeler ici le component de formulaire
           // de login
-          // Coopernet.setUsername("gregory2koch");
-          // Coopernet.setPassword("gregory2koch");
-          // await Coopernet.setOAuthToken();
+          Coopernet.setUsername("gregory2koch");
+          Coopernet.setPassword("gregory2koch");
+          await Coopernet.setOAuthToken();
           // Si ce code est exécuté, c'est que je suis bien connecté
           console.log(
             `Je suis maintenant bien connecté au serveur de Coopernet`
@@ -45,30 +47,43 @@ function App() {
           await fetchTask();
         }
       } catch (error) {
-        // Ici, il faudrait afficher dans l'interface qu'il y a eu une erreur
-        // d'identification et donner un email de l'administrateur par exemple
         console.error("Erreur attrapée : " + error);
       }
     };
     testLocalStorageToken();
   }, []);
 
+  //Râfraichissement des tâches lors de la connexion
+  useEffect(() => {
+    const getTasks = async () => {
+      if (isConnected) {
+        setTasks(await Coopernet.getTasks());
+      }
+    };
+    getTasks();
+  }, [isConnected]);
+
+  //Connexion avec le login et pwd récupéré dans le formulaire Login
   const signIn = async (login,pwd) => {
-    Coopernet.setUsername(login);
-    Coopernet.setPassword(pwd);
-    Coopernet.setOAuthToken();
-    session.isConnected = true;
+    if(login !== '' && pwd !==''){
+      console.log('Dans signIn');
+      Coopernet.setUsername(login);
+      Coopernet.setPassword(pwd);
+      await Coopernet.setOAuthToken();
+      setIsConnected(true);
+      fetchTask();
+    }
   }
 
+  //Déconnexion
   const signOut = async() => {
+    console.log('Dans SignOut')
     Coopernet.oauth = {};
     Coopernet.setUsername("");
     Coopernet.setPassword("");
-    setTasks()
     localStorage.removeItem("token");
     await Coopernet.setPayload(true);
-    session.isConnected = false;
-    console.log(session.isConnected);
+    setIsConnected(false);
   }
 
   /**
@@ -134,6 +149,9 @@ function App() {
 
     /**
      * Modification de la tâche sélectionnée en local et sur le serveur
+     * @param {string} newLabel 
+     * @param {string} newDescription 
+     * @param {timestamp} newEnded    
      */
     const updateTaskSelected = async (newLabel,newDescription,newEnded,index) => {
       console.log('updateTaskSelected');
@@ -144,7 +162,7 @@ function App() {
       await Coopernet.updateTask(tasks[index], tasks.length);
       setDisplayForm({type:'none',taskIndex:-1});
     };
-    if(session.isConnected === true){
+    if(isConnected === true){
       return (
         <div className="App container">
           <div className="d-flex justify-content-between my-3">
@@ -201,8 +219,7 @@ function App() {
       return(
         <div>
         {/** Formulaire de Login */}
-        {session.isConnected === false && <Login
-          session={session}
+        {<Login
           signIn={signIn}
         />}
         </div>

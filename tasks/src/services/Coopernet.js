@@ -231,6 +231,7 @@ class Coopernet {
             "token",
             JSON.stringify(Coopernet.oauth.refresh_token)
           ); //Le refresh_token a été rafraîchi, donc je stock le nouveau
+          console.log('Il y a un token')
           return true;
         }
       }
