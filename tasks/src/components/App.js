@@ -150,14 +150,14 @@ function App() {
           signIn={signIn}
         />} */}
         <div className="d-flex justify-content-between my-3">
-          <h1>Liste des tâches</h1>
+          <h1>Ma liste de tâches</h1>
           <button 
           onClick={()=> signOut()}
           className="btn btn-secondary">Se déconnecter</button>
         </div>
         {/**Formulaire d'ajout d'une tâche */}
         {displayForm.type === 'none' && <button onClick={() => setDisplayForm({type:'add'})}
-        className="btn btn-primary fixed">Ajouter une tâche</button>}
+        className="btn btn-primary mb-3">Ajouter une tâche</button>}
         {displayForm.type === 'add' && <FormTask displayForm={displayForm}
           setDisplayForm={setDisplayForm}
           handleSubmitAddTask={handleSubmitAddTask}
