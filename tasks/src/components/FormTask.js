@@ -6,8 +6,8 @@ const FormTask = (props) => {
         <input
           type="text"
           id="label"
-          onChange={() => {}}
-          value={props.task.label}
+          //onInput={() => {''}}
+          defaultValue={props.task.label}
           required
         />
       );
@@ -16,7 +16,7 @@ const FormTask = (props) => {
     }
   };
 
-//   const getInput = () =>
+//   const getInputTitle = () =>
 //     task?.label ? (
 //       <input
 //         type="text"
@@ -36,8 +36,8 @@ const FormTask = (props) => {
         <input
           type="text"
           id="description"
-          onChange={() => {}}
-          value={props.task.description}
+          //onChange={() => {}}
+          defaultValue={props.task.description}
         />
       );
     } else {
@@ -52,8 +52,8 @@ const FormTask = (props) => {
         <input
           type="date"
           id="ended"
-          onChange={() => {}}
-          value={props.task.ended}
+          //onChange={() => {}}
+          defaultValue={props.task.ended}
         />
       );
     } else {
@@ -68,8 +68,8 @@ const FormTask = (props) => {
         const label = document.querySelector("#label").value;
         const description = document.querySelector("#description").value;
         const ended = document.querySelector("#ended").value;
-        {props.displayForm.type === "add" && props.handleSubmitAddTask(label, description, ended)};
-        {props.displayForm.type === "update" && props.updateTaskSelected()};
+        props.displayForm.type === "add" && props.handleSubmitAddTask(label, description, ended);
+        props.displayForm.type === "update" && props.updateTaskSelected(label, description, ended, props.index);
       }}
       className="d-flex flex-column align-items-center my-4 w-100"
     >

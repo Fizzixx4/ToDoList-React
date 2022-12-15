@@ -2,6 +2,7 @@ import Coopernet from "./../services/Coopernet";
 import { useState, useEffect } from "react";
 import Task from "./Task";
 import FormTask from "./FormTask";
+import Login from "./Login";
 
 const initial_value = [];
 function App() {
@@ -9,6 +10,7 @@ function App() {
   // useState renvoie un tableau. Le premier élément de ce dernier est un état et le deuxième élément est une référence vers la fonction qui permet de modifier cet état.
   const [tasks, setTasks] = useState(initial_value);
   const [displayForm, setDisplayForm] = useState({type : 'none', taskIndex : -1});
+  const [session, setSession] = useState({user : '', pwd : '', isConnected : false});
 
   const fetchTask = async () => {
     // Récupération des tâches :
@@ -51,6 +53,21 @@ function App() {
     testLocalStorageToken();
   }, []);
 
+  const signIn = async (login,pwd) => {
+    Coopernet.setUsername(login);
+    Coopernet.setPassword(pwd);
+    await Coopernet.setPayload(false);
+    session.isConnected = true;
+  }
+
+  const signOut = async() => {
+    Coopernet.setUsername("");
+    Coopernet.setPassword("");
+    localStorage.removeItem("token");
+    await Coopernet.setPayload(true);
+    session.isConnected = false;
+  }
+
   /**
    * Gère le click sur le bouton Valider/Invalider pour barrer la tâche
    */
@@ -83,6 +100,7 @@ function App() {
     newTask.created = recupData.created;
     newTask.isValidate = 0;
     setTasks([...tasks, newTask]);
+    displayForm.type = "none";
   };
 
     /**
@@ -102,7 +120,7 @@ function App() {
     };
 
     /**
-     * 
+     * Ouverture du formulaire d'update avec le remplissage des champs par rapport à la tâche sélectionnée
      */
     const handleClickUpdateTask = (id) => {
       console.log('dans handleClickUpdateTask')
@@ -111,55 +129,73 @@ function App() {
       setDisplayForm({type: 'update', taskIndex:taskIndex});
     }
 
-    const updateTaskSelected = () => {
+    /**
+     * Modification de la tâche sélectionnée en local et sur le serveur
+     */
+    const updateTaskSelected = async (newLabel,newDescription,newEnded,index) => {
       console.log('updateTaskSelected');
+      tasks[index].label = newLabel; 
+      tasks[index].description = newDescription;
+      tasks[index].ended = newEnded;
+      setTasks([...tasks]);
+      await Coopernet.updateTask(tasks[index], tasks.length);
+      setDisplayForm({type:'none',taskIndex:-1});
     };
-
-
-   // const updateCurrentTask()
 
   return (
     <div className="App container">
-      <div className="d-flex justify-content-between my-3">
-        <h1>Liste des tâches</h1>
-        <button className="btn btn-secondary">Se déconnecter</button>
-    </div>
-      {displayForm.type === 'none' && <button onClick={() => setDisplayForm({type:'add'})}
-      className="btn btn-primary fixed">Ajouter une tâche</button>}
-      {displayForm.type === 'add' && <FormTask displayForm={displayForm}
+        {/** Formulaire de Login */}
+        {/* {session.isConnected === false && <Login
+          session={session}
+          signIn={signIn}
+        />} */}
+        <div className="d-flex justify-content-between my-3">
+          <h1>Liste des tâches</h1>
+          <button 
+          onClick={()=> signOut()}
+          className="btn btn-secondary">Se déconnecter</button>
+        </div>
+        {/**Formulaire d'ajout d'une tâche */}
+        {displayForm.type === 'none' && <button onClick={() => setDisplayForm({type:'add'})}
+        className="btn btn-primary fixed">Ajouter une tâche</button>}
+        {displayForm.type === 'add' && <FormTask displayForm={displayForm}
+          setDisplayForm={setDisplayForm}
+          handleSubmitAddTask={handleSubmitAddTask}
+        />}
+        {/**Formulaire de modification de la tâche */}
+        {displayForm.type === 'update' && <FormTask 
+        displayForm={displayForm}
         setDisplayForm={setDisplayForm}
-        handleSubmitAddTask={handleSubmitAddTask}
-      />}
-      {displayForm.type === 'update' && <FormTask 
-      displayForm={displayForm}
-      setDisplayForm={setDisplayForm}
-      handleClickUpdateTask={handleClickUpdateTask}
-      task={tasks[displayForm.taskIndex]}
-      updateTaskSelected = {updateTaskSelected}
-    />}
-      
-      <h2 className="my-3">Tâches En cours</h2>
-      {tasks.filter(task => parseInt(task.isValidate) !== 1).map((task, index) => (
-        <Task
-          task={task}
-          key={task.id}
-          handleClickDeleteTask={handleClickDeleteTask}
-          handleClickUpdateTask={handleClickUpdateTask}
-          handleClickValidateTask={handleClickValidateTask}
-          index={index}//!\\
-        />
-      ))}
-      <h2 className="my-3">Tâches Terminées</h2>
-      {tasks.filter(task => parseInt(task.isValidate) === 1).map((task, index) => (
-        <Task
-          task={task}
-          key={task.id}
-          handleClickDeleteTask={handleClickDeleteTask}
-          handleClickUpdateTask={handleClickUpdateTask}
-          handleClickValidateTask={handleClickValidateTask}
-          index={index}//!\\
-        />
-      ))}
+        handleClickUpdateTask={handleClickUpdateTask}
+        task={tasks[displayForm.taskIndex]}
+        index = {displayForm.taskIndex}
+        key={tasks[displayForm.taskIndex].id}
+        updateTaskSelected = {updateTaskSelected}
+        />}
+        {/** Liste des Tâches En cours en se basant sur le isValidate*/}
+        <h2 className="my-3">Tâches En cours</h2>
+        {tasks.filter(task => parseInt(task.isValidate) !== 1).map((task, index) => (
+          <Task
+            task={task}
+            key={task.id}
+            handleClickDeleteTask={handleClickDeleteTask}
+            handleClickUpdateTask={handleClickUpdateTask}
+            handleClickValidateTask={handleClickValidateTask}
+            index={index}//!\\
+          />
+        ))}
+        {/** Liste des Tâches Terminées en se basant sur le isValidate*/}
+        <h2 className="my-3">Tâches Terminées</h2>
+        {tasks.filter(task => parseInt(task.isValidate) === 1).map((task, index) => (
+          <Task
+            task={task}
+            key={task.id}
+            handleClickDeleteTask={handleClickDeleteTask}
+            handleClickUpdateTask={handleClickUpdateTask}
+            handleClickValidateTask={handleClickValidateTask}
+            index={index}//!\\
+          />
+        ))}
     </div>
   );
 }
