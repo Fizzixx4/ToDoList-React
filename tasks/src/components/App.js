@@ -34,9 +34,9 @@ function App() {
           // Je modifie le login et le mot de passe
           // Il faudra faire en sorte d'appeler ici le component de formulaire
           // de login
-          Coopernet.setUsername("gregory2koch");
-          Coopernet.setPassword("gregory2koch");
-          await Coopernet.setOAuthToken();
+          // Coopernet.setUsername("gregory2koch");
+          // Coopernet.setPassword("gregory2koch");
+          // await Coopernet.setOAuthToken();
           // Si ce code est exécuté, c'est que je suis bien connecté
           console.log(
             `Je suis maintenant bien connecté au serveur de Coopernet`
@@ -56,16 +56,19 @@ function App() {
   const signIn = async (login,pwd) => {
     Coopernet.setUsername(login);
     Coopernet.setPassword(pwd);
-    await Coopernet.setPayload(false);
+    Coopernet.setOAuthToken();
     session.isConnected = true;
   }
 
   const signOut = async() => {
+    Coopernet.oauth = {};
     Coopernet.setUsername("");
     Coopernet.setPassword("");
+    setTasks()
     localStorage.removeItem("token");
     await Coopernet.setPayload(true);
     session.isConnected = false;
+    console.log(session.isConnected);
   }
 
   /**
@@ -141,63 +144,70 @@ function App() {
       await Coopernet.updateTask(tasks[index], tasks.length);
       setDisplayForm({type:'none',taskIndex:-1});
     };
-
-  return (
-    <div className="App container">
+    if(session.isConnected === true){
+      return (
+        <div className="App container">
+          <div className="d-flex justify-content-between my-3">
+            <h1>Ma liste de tâches</h1>
+            <button 
+            onClick={()=> signOut()}
+            className="btn btn-secondary">Se déconnecter</button>
+          </div>
+          {/**Formulaire d'ajout d'une tâche */}
+          {displayForm.type === 'none' && <button onClick={() => setDisplayForm({type:'add'})}
+          className="btn btn-primary mb-3">Ajouter une tâche</button>}
+          {displayForm.type === 'add' && <FormTask displayForm={displayForm}
+            setDisplayForm={setDisplayForm}
+            handleSubmitAddTask={handleSubmitAddTask}
+          />}
+          {/**Formulaire de modification de la tâche */}
+          {displayForm.type === 'update' && <FormTask 
+          displayForm={displayForm}
+          setDisplayForm={setDisplayForm}
+          handleClickUpdateTask={handleClickUpdateTask}
+          task={tasks[displayForm.taskIndex]}
+          index = {displayForm.taskIndex}
+          key={tasks[displayForm.taskIndex].id}
+          updateTaskSelected = {updateTaskSelected}
+          />}
+          {/** Liste des Tâches En cours en se basant sur le isValidate*/}
+          <h2 className="my-3">Tâches En cours</h2>
+          {tasks.filter(task => parseInt(task.isValidate) !== 1).map((task, index) => (
+            <Task
+              task={task}
+              key={task.id}
+              handleClickDeleteTask={handleClickDeleteTask}
+              handleClickUpdateTask={handleClickUpdateTask}
+              handleClickValidateTask={handleClickValidateTask}
+              index={index}//!\\
+            />
+          ))}
+          {/** Liste des Tâches Terminées en se basant sur le isValidate*/}
+          <h2 className="my-3">Tâches Terminées</h2>
+          {tasks.filter(task => parseInt(task.isValidate) === 1).map((task, index) => (
+            <Task
+              task={task}
+              key={task.id}
+              handleClickDeleteTask={handleClickDeleteTask}
+              handleClickUpdateTask={handleClickUpdateTask}
+              handleClickValidateTask={handleClickValidateTask}
+              index={index}//!\\
+            />
+          ))}
+      </div>
+    );
+    }
+    else{
+      return(
+        <div>
         {/** Formulaire de Login */}
-        {/* {session.isConnected === false && <Login
+        {session.isConnected === false && <Login
           session={session}
           signIn={signIn}
-        />} */}
-        <div className="d-flex justify-content-between my-3">
-          <h1>Ma liste de tâches</h1>
-          <button 
-          onClick={()=> signOut()}
-          className="btn btn-secondary">Se déconnecter</button>
+        />}
         </div>
-        {/**Formulaire d'ajout d'une tâche */}
-        {displayForm.type === 'none' && <button onClick={() => setDisplayForm({type:'add'})}
-        className="btn btn-primary mb-3">Ajouter une tâche</button>}
-        {displayForm.type === 'add' && <FormTask displayForm={displayForm}
-          setDisplayForm={setDisplayForm}
-          handleSubmitAddTask={handleSubmitAddTask}
-        />}
-        {/**Formulaire de modification de la tâche */}
-        {displayForm.type === 'update' && <FormTask 
-        displayForm={displayForm}
-        setDisplayForm={setDisplayForm}
-        handleClickUpdateTask={handleClickUpdateTask}
-        task={tasks[displayForm.taskIndex]}
-        index = {displayForm.taskIndex}
-        key={tasks[displayForm.taskIndex].id}
-        updateTaskSelected = {updateTaskSelected}
-        />}
-        {/** Liste des Tâches En cours en se basant sur le isValidate*/}
-        <h2 className="my-3">Tâches En cours</h2>
-        {tasks.filter(task => parseInt(task.isValidate) !== 1).map((task, index) => (
-          <Task
-            task={task}
-            key={task.id}
-            handleClickDeleteTask={handleClickDeleteTask}
-            handleClickUpdateTask={handleClickUpdateTask}
-            handleClickValidateTask={handleClickValidateTask}
-            index={index}//!\\
-          />
-        ))}
-        {/** Liste des Tâches Terminées en se basant sur le isValidate*/}
-        <h2 className="my-3">Tâches Terminées</h2>
-        {tasks.filter(task => parseInt(task.isValidate) === 1).map((task, index) => (
-          <Task
-            task={task}
-            key={task.id}
-            handleClickDeleteTask={handleClickDeleteTask}
-            handleClickUpdateTask={handleClickUpdateTask}
-            handleClickValidateTask={handleClickValidateTask}
-            index={index}//!\\
-          />
-        ))}
-    </div>
-  );
+      )
+    }
 }
 
 export default App;
